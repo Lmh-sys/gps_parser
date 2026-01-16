@@ -70,7 +70,8 @@ void GTIMUParser::pubResult(const ros::Publisher &publisher) {
     sensor_msgs::Imu imu;
     const auto& d = currentData_;
     
-    imu.header.stamp = ros::Time(gps_time_to_unix_second(d.gpsWeek, d.gpsTime));
+    // imu.header.stamp = ros::Time(gps_time_to_unix_second(d.gpsWeek, d.gpsTime));
+    imu.header.stamp = ros::Time::now();
     
     // set orientation:
     imu.orientation.w = 1;
@@ -84,9 +85,9 @@ void GTIMUParser::pubResult(const ros::Publisher &publisher) {
     imu.angular_velocity.z = d.gyro_z * DEG2RAD;
 
     // set linear acceleration:
-    imu.linear_acceleration.x = d.acc_x;
-    imu.linear_acceleration.y = d.acc_y;
-    imu.linear_acceleration.z = d.acc_z;
+    imu.linear_acceleration.x = d.acc_x * GRAVITY;
+    imu.linear_acceleration.y = d.acc_y * GRAVITY;
+    imu.linear_acceleration.z = d.acc_z * GRAVITY;
 
     publisher.publish(imu);
 }

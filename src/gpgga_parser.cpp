@@ -86,7 +86,7 @@ void GPGGAParser::pubResult(const ros::Publisher &publisher) {
     const auto& d = currentData_;
     sensor_msgs::NavSatFixPtr nav_msg(new sensor_msgs::NavSatFix());
     nav_msg->header.frame_id = "global";
-    nav_msg->header.stamp = gpggaTimeToROSTime(d.utcTime);
+    nav_msg->header.stamp = ros::Time::now();
     nav_msg->latitude = d.latitude;                                // rad
     nav_msg->longitude = d.longitude;                               // rad
     nav_msg->altitude = d.altitude;                                // rad

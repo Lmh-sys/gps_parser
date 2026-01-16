@@ -15,7 +15,7 @@ bool GPFPDParser::parseImpl(const std::string& data) {
  
     // 2. 校验和验证
     if (!validateChecksum(data)) {
-        std::cerr << "GPFPD checksum validation failed" << std::endl;
+        std::cerr << "GPFPD checksum validation failed:\n" << data << std::endl;
         return false;
     }
  
@@ -107,7 +107,7 @@ void GPFPDParser::pubResult(const ros::Publisher &publisher) {
     const auto& d = currentData_;
     sensor_msgs::NavSatFixPtr nav_msg(new sensor_msgs::NavSatFix());
     nav_msg->header.frame_id = "global";
-    nav_msg->header.stamp = ros::Time(gps_time_to_unix_second(d.gpsWeek, d.gpsTime));
+    nav_msg->header.stamp = ros::Time::now();
     nav_msg->latitude = d.latitude;                                // rad
     nav_msg->longitude = d.longitude;                               // rad
     nav_msg->altitude = d.altitude;                                // rad

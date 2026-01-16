@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             // std::cout << "\n data:" << data << std::endl;
             it->second->enqueue(data);
         } else {
-            std::cerr << "[WARN] Unknown protocol: " << header << std::endl;
+            // std::cerr << "[WARN] Unknown protocol: " << header << std::endl;
         }
     });
     
