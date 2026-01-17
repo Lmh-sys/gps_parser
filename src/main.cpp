@@ -29,6 +29,11 @@ int main(int argc, char *argv[]) {
     for (auto& [key, parser] : parser_map) {
         parser->start(); 
     }
+    // std::string str = "$GPFPD,2401,532628.810,4.133,2.578,-0.712,22.57913897,113.93795461,33.09,0.579,0.270,-0.119,0.157,8,14,4B*00";
+    // parser_map["$GPFPD"]->enqueue(str);
+    // std::string str = "$GPGGA,092725.00,4717.1139,N,00833.9159,E,1,08,1.1,499.60,M,48.00,M,00,0000*62";
+    // parser_map["$GPGGA"]->enqueue(str);
+
     auto port = std::make_unique<SerialPort>("/dev/gnss0", 115200);
     port->setDataCallback([&parser_map](const std::string& data) {
         // 提取消息头（前6字节）

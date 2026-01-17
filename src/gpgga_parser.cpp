@@ -120,9 +120,7 @@ void GPGGAParser::stop() {
 void GPGGAParser::workerThread() {
     while (ros::ok() && running_) {
         std::unique_lock<std::mutex> lock(mutex_);
-        cv_.wait(lock, [this]() { return !dataQueue_.empty() || !running_; });
-        
-        if (!running_) break;
+        cv_.wait(lock, [this]() { return !dataQueue_.empty(); });
         
         std::string data = std::move(dataQueue_);
         dataQueue_.clear();
@@ -131,7 +129,7 @@ void GPGGAParser::workerThread() {
         if(parseImpl(data))
         {
             std::lock_guard<std::mutex> output_lock(g_outputMutex);
-            // printResult();
+            printResult();
             pubResult(publisher_);
         }
     }

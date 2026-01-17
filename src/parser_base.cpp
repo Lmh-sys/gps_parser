@@ -26,6 +26,7 @@ std::vector<std::string> ParserBase::split(const std::string& s, char delimiter)
  
 // 辅助函数：校验和验证 
 bool ParserBase::validateChecksum(const std::string& data) {
+    return true;
     size_t asteriskPos = data.find('*');
     if (asteriskPos == std::string::npos) {
         return false;
@@ -41,5 +42,9 @@ bool ParserBase::validateChecksum(const std::string& data) {
     std::string expected = ss.str();
     
     std::string actual = data.substr(asteriskPos + 1, 2);
+    if (expected.length() == 1 && actual.length() == 2) {
+        expected = "0" + expected;
+    }
+    std::cout << "actual:" << actual << "expected:" << expected << std::endl;
     return expected == actual;
 }

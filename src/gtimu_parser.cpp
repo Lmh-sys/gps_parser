@@ -113,9 +113,7 @@ void GTIMUParser::stop() {
 void GTIMUParser::workerThread() {
     while (ros::ok() && running_) {
         std::unique_lock<std::mutex> lock(mutex_);
-        cv_.wait(lock, [this]() { return !dataQueue_.empty() || !running_; });
-        
-        if (!running_) break;
+        cv_.wait(lock, [this]() { return !dataQueue_.empty(); });
         
         std::string data = std::move(dataQueue_);
         dataQueue_.clear();
