@@ -89,7 +89,8 @@ void GPGGAParser::pubResult(const ros::Publisher &publisher) {
     nav_msg->header.stamp = ros::Time::now();
     nav_msg->latitude = d.latitude;                                // rad
     nav_msg->longitude = d.longitude;                               // rad
-    nav_msg->altitude = d.altitude;                                // rad
+    nav_msg->altitude = d.msl;                                // rad
+    nav_msg->position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_DIAGONAL_KNOWN;
     nav_msg->position_covariance[0] = d.hdop * d.hdop; // m*m
     nav_msg->position_covariance[4] = d.hdop * d.hdop; // m*m
     nav_msg->position_covariance[8] = d.hdop * d.hdop; // m*m
@@ -129,7 +130,7 @@ void GPGGAParser::workerThread() {
         if(parseImpl(data))
         {
             std::lock_guard<std::mutex> output_lock(g_outputMutex);
-            printResult();
+            // printResult();
             pubResult(publisher_);
         }
     }

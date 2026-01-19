@@ -103,8 +103,37 @@ void GPHPDParser::pubResult(const ros::Publisher &publisher) {
     nav_msg->altitude = d.altitude;                                // rad
 
     sensor_msgs::NavSatStatus nav_status_msg;
-    nav_status_msg.status = d.status < 5 ? 0:2; // RTK status
+    switch (d.status)
+    {
+    case 0:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
+      break;
+    case 3:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+      break;
+    case 4:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+      break;
+    case 5:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_SBAS_FIX;
+      break;  
+    case 11:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_GBAS_FIX;
+      break;  
+    default:
+      break;
+    }
     nav_status_msg.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
+    nav_msg->position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+    nav_msg->position_covariance[0] = d.nsv1; // 从天线卫星数量
+    nav_msg->position_covariance[1] = d.nsv2; // 主天线卫星数量
+    nav_msg->position_covariance[2] = d.baseline; // 基线
+    nav_msg->position_covariance[3] = d.ve; // 东向速度
+    nav_msg->position_covariance[4] = d.vn; // 北向速度
+    nav_msg->position_covariance[5] = d.vu; // 天向速度
+    nav_msg->position_covariance[6] = d.heading; // 航向
+    nav_msg->position_covariance[7] = d.pitch; // 姿态
+    nav_msg->position_covariance[8] = d.track; // 姿态
     nav_msg->status = nav_status_msg;
     publisher.publish(nav_msg);
 }

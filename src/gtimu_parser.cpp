@@ -72,6 +72,8 @@ void GTIMUParser::pubResult(const ros::Publisher &publisher) {
     
     // imu.header.stamp = ros::Time(gps_time_to_unix_second(d.gpsWeek, d.gpsTime));
     imu.header.stamp = ros::Time::now();
+    imu.header.frame_id = "imu";
+    imu.header.seq = d.temperature;   //温度
     
     // set orientation:
     imu.orientation.w = 1;
@@ -80,13 +82,13 @@ void GTIMUParser::pubResult(const ros::Publisher &publisher) {
     imu.orientation.z = 0;
 
     // set angular velocity:
-    imu.angular_velocity.x = d.gyro_x * DEG2RAD;
-    imu.angular_velocity.y = d.gyro_y * DEG2RAD;
+    imu.angular_velocity.x = -d.gyro_x * DEG2RAD;
+    imu.angular_velocity.y = -d.gyro_y * DEG2RAD;
     imu.angular_velocity.z = d.gyro_z * DEG2RAD;
 
     // set linear acceleration:
-    imu.linear_acceleration.x = d.acc_x * GRAVITY;
-    imu.linear_acceleration.y = d.acc_y * GRAVITY;
+    imu.linear_acceleration.x = -d.acc_x * GRAVITY;
+    imu.linear_acceleration.y = -d.acc_y * GRAVITY;
     imu.linear_acceleration.z = d.acc_z * GRAVITY;
 
     publisher.publish(imu);

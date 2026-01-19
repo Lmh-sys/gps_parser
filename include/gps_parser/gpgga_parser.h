@@ -8,7 +8,7 @@
 // GNSS定位定向消息集
 struct GPGGAData {
     std::string utcTime;
-    double latitude, longitude, altitude;
+    double latitude, longitude;
     int status;
     int nsv1;
     double hdop, msl, altref;

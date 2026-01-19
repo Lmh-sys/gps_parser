@@ -108,14 +108,42 @@ void GPFPDParser::pubResult(const ros::Publisher &publisher) {
     sensor_msgs::NavSatFixPtr nav_msg(new sensor_msgs::NavSatFix());
     nav_msg->header.frame_id = "global";
     nav_msg->header.stamp = ros::Time::now();
-    nav_msg->latitude = d.latitude;                                // rad
-    nav_msg->longitude = d.longitude;                               // rad
-    nav_msg->altitude = d.altitude;                                // rad
+    nav_msg->latitude = d.latitude;                                
+    nav_msg->longitude = d.longitude;                              
+    nav_msg->altitude = d.altitude;                                
 
     sensor_msgs::NavSatStatus nav_status_msg;
-    int highNibble = (d.status >> 4) & 0x0F;
-    nav_status_msg.status = highNibble != 4 ? 0:2; // RTK status
+    switch (d.status & 0x0F)
+    {
+    case 0:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
+      break;
+    case 3:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+      break;
+    case 4:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+      break;
+    case 5:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_SBAS_FIX;
+      break;  
+    case 11:
+      nav_status_msg.status = sensor_msgs::NavSatStatus::STATUS_GBAS_FIX;
+      break;  
+    default:
+      break;
+    }
     nav_status_msg.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
+    nav_msg->position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
+    nav_msg->position_covariance[0] = d.nsv1; // 从天线卫星数量
+    nav_msg->position_covariance[1] = d.nsv2; // 主天线卫星数量
+    nav_msg->position_covariance[2] = d.baseline; // 基线
+    nav_msg->position_covariance[3] = d.ve; // 东向速度
+    nav_msg->position_covariance[4] = d.vn; // 北向速度
+    nav_msg->position_covariance[5] = d.vu; // 天向速度
+    nav_msg->position_covariance[6] = d.heading; // 航向
+    nav_msg->position_covariance[7] = d.pitch; // 姿态
+    nav_msg->position_covariance[8] = d.roll; // 姿态
     nav_msg->status = nav_status_msg;
     publisher.publish(nav_msg);
 }
@@ -149,7 +177,7 @@ void GPFPDParser::workerThread() {
         if(parseImpl(data))
         {
             std::lock_guard<std::mutex> output_lock(g_outputMutex);
-            printResult();
+            // printResult();
             pubResult(publisher_);
         }
     }
